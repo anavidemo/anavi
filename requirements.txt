@@ -1,0 +1,11 @@
+ipykernel
+ipywidgets
+numpy
+pandas
+langchain-core
+langgraph
+langchain-openai
+python-dotenv
+pyarrow
+streamlit
+openpyxl
