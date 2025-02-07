@@ -93,10 +93,14 @@ en la base de datos para tener registro de la conversación. Es muy importante q
 
 ### PARTE DE STREAMLIT PUE' ###
 # Al parecer el titulo esta ajeno al sidebar, es algo mas integral
-st.title("ANAVI - Asistente Virtual de BBVA")
+col1, col2 = st.columns(2)
+with col1:
+    st.image(os.path.join(FOLDER, "logo_bbva.jpg"), use_container_width=True)
+with col2:
+    st.title("ANAVI - Asistente Virtual de BBVA")
 
 # Acá voy a dejar la descripción de ANAVI
-with st.expander("¿Qué es ANAVI?"):
+with st.expander("**¿Qué es ANAVI?**"):
     st.write(
 """
 ANAVI es el prototipo de asistente para BBVA que permite llevar la autogestión al siguiente nivel.
@@ -131,49 +135,51 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Ahora, cuando yo usuario escriba algo
-# Eso que escribo lo muestro como chat_message con el nombre que le asigne
-# Si no hay nada escrito no pasa nada
-if prompt := st.chat_input("Cuéntamelo todo"):
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    # Y agregamos la respuesta del bicho
-    # Aquí es donde ocurre la magia
-    # Lista de herramientas
-    tools = [send_user_email, send_area_email, generate_case_number, get_transaction, generate_image, store_case, get_case_date]
-    agent_executor = create_react_agent(model_gen, tools, checkpointer=st.session_state["memory"])
-    config = {"configurable": {"thread_id": st.session_state["thread_id"]}}
-    messages = [
-        SystemMessage(content=template),
-        HumanMessage(content=prompt)
-    ]
-    response = agent_executor.invoke({"messages": messages}, config)
-    response = response["messages"][-1].content
-    with st.chat_message("assistant"):
-        st.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+with st.container():
+    # Ahora, cuando yo usuario escriba algo
+    # Eso que escribo lo muestro como chat_message con el nombre que le asigne
+    # Si no hay nada escrito no pasa nada
+    if prompt := st.chat_input("Escribe aquí..."):
+        with st.chat_message("user"):
+            st.markdown(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        # Y agregamos la respuesta del bicho
+        # Aquí es donde ocurre la magia
+        # Lista de herramientas
+        tools = [send_user_email, send_area_email, generate_case_number, get_transaction, generate_image, store_case, get_case_date]
+        agent_executor = create_react_agent(model_gen, tools, checkpointer=st.session_state["memory"])
+        config = {"configurable": {"thread_id": st.session_state["thread_id"]}}
+        messages = [
+            SystemMessage(content=template),
+            HumanMessage(content=prompt)
+        ]
+        response = agent_executor.invoke({"messages": messages}, config)
+        response = response["messages"][-1].content
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
-    # Boton de descarga de las imagenes
-    if "tu comprobante" in response.lower():
-        cus = re.findall(r"\d{10}", response)[0]
-        print(cus)
-        with open(os.path.join(FOLDER, f"{cus}.png"), "rb") as file:
-            btn = st.download_button(
-                label="Descargar imagen",
-                data=file,
-                file_name=f"comprobante-{cus}.png",
-                mime="image/png",
-            )
+        # Boton de descarga de las imagenes
+        if "tu comprobante" in response.lower():
+            cus = re.findall(r"\d{10}", response)[0]
+            print(cus)
+            with open(os.path.join(FOLDER, f"{cus}.png"), "rb") as file:
+                btn = st.download_button(
+                    label="Descargar imagen",
+                    data=file,
+                    file_name=f"comprobante-{cus}.png",
+                    mime="image/png",
+                )
 
 # Acá voy a dejar un espacio para que muestre los casos almacenados en la base de datos
 with st.container():
-    with st.expander("Base de datos de consultas realizadas"):
-        if st.button("Actualizar BD"):
+    with st.expander("**Base de datos de casos generados**"):
+        st.text("Aquì puedes ver los casos que ha registrado ANAVI. Al oprimir el botón, la BD se actualizará automáticamente.")
+        if st.button("Mostrar BD"):
             conn = sqlite3.connect(
                 os.path.join(FOLDER, "case_db.db")
             )
             cursor = conn.cursor()
             df = pd.read_sql_query("SELECT * FROM casos", conn)
             conn.close()
-            st.table(df)
+            st.dataframe(df)
