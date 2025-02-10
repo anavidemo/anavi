@@ -8,6 +8,7 @@ import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 import datetime
 import logging
+import traceback
 
 # LOGS
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
@@ -263,7 +264,7 @@ def generate_image(user_id, date, description, value, cus, account, state):
         logger.info("Imagen generada exitosamente.")
     
     except Exception as e:
-        logger.error(f"Error generando imagen: {e}")
+        logger.error(f"Error generando imagen en la fila {traceback.extract_tb(e.__traceback__)[-1][1]}: {e}")
 
     return "Imagen generada"
 
