@@ -218,7 +218,7 @@ def generate_image(user_id, date, description, value, cus, account, state):
 
     try:
         # Acá dejamos los parametros basicos de la libreria para generar imagenes
-        font = "arial.ttf"
+        font = os.path.join(FOLDER, "fonts", "ARIAL.TTF")
         boldfont = ImageFont.truetype(font, 20)
         normalfont = ImageFont.truetype(font, 20)
 
