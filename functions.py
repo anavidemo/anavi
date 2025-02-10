@@ -32,18 +32,27 @@ def get_transaction(user_id):
     # Aunque no deberia porque podria colapsar la RAM
     # Mejor leerla y luego eliminar su registro en memoria cuando ya tenga la respuesta
     # Es una opción que luego veremos si funciona o no, por ahora en memoria
-    db = pd.read_excel(
-        os.path.join(DATA_FOLDER, "data_cus.xlsx"),
-        sheet_name=0,
-        dtype=str,
-    )
-    logger.info("Transacciones consultadas")
+    try:
+        db = pd.read_csv(
+            os.path.join(DATA_FOLDER, "data_cus.csv"),
+            sep="|",
+            encoding="utf-8",
+        )
 
-    # Basicamente lo que hacemos es filtrar la base de datos de las transacciones 
-    # Unicamente para las del usuario que estoy buscando, nada más
-    # El resultado es una TABLA REDUCIDA que el LLM luego va leer para encontrar lo que le pidamos
+        # Basicamente lo que hacemos es filtrar la base de datos de las transacciones 
+        # Unicamente para las del usuario que estoy buscando, nada más
+        # El resultado es una TABLA REDUCIDA que el LLM luego va leer para encontrar lo que le pidamos
 
-    return db[db["cedula"]==user_id]
+        db[db["cedula"]==user_id]
+        db = db[["fecha", "descripcion", "valor", "cus", "estado"]]
+        db["transaccion"] = "fecha: " + db["fecha"].astype(str) + "---" + "descripcion: "  + db["descripcion"].astype(str) + "---" + "valor: " + db["valor"].astype(str) + "---" + "cus: " + db["cus"].astype(str) + "---" + "estado: " + db["estado"].astype(str)
+
+        logger.info("Transacciones consultadas")
+
+    except Exception as e:
+        logger.error(f"Error leyendo transacciones {traceback.extract_tb(e.__traceback__)[-1][1]}: {e}")
+
+    return "\n".join(db["transaccion"].tolist())
 
 # Función para generar un numero consecutivo que pueda meter en la base de datos
 @tool
