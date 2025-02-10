@@ -137,7 +137,7 @@ def send_area_email(user_name, user_document, area_name, case_info, case_number,
         "TRANS": "juandavid.duran@bbva.com",
         "SUCUR": "leslykatherine.pineros@bbva.com",
         "SEGUR": "lauraconsuelo.caro@bbva.com",
-        "PRODU": "santiago.moreno.rodriguiez@bbva.com"
+        "PRODU": "santiago.moreno.rodriguez@bbva.com"
     }
     area_email = mails[area_name]
 

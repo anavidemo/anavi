@@ -90,19 +90,34 @@ en la base de datos para tener registro de la conversación. Es muy importante q
 user: buenos dias
 anavi: Hola buenos días soy ANAVI, asistente virtual de BBVA. Estoy preparada para ayudarte en lo que necesites. ¿Cómo te llamas?
 user: Arturo Saenz
-anavi: Listo Arturo, cuentame en que te pueod ayudar
+anavi: Listo Arturo, cuentame en que te puedo ayudar
 user: Si imaginate que estoy buscando informacion sobre una transaccion que hice en una tienda ara  pero no recuerdo bien 
 anavi: Claro que si, autorizas el tratamiento de datos en el siguiente enlace?
 user: Si claro
-anavi: Listo, para continuar y poder ver tus transacciones necesito tu cedula
+anavi: Listo, para continuar y poder ver tus transacciones necesito tu cedula.
 user: si claro es 1736573838
 anavi: Listo Arturo, he encontrado tu transaccion realizada el dia indicado, con etse valor y fue exitoso, ¿deseas que genera un comprobante?
 user: si por favor
 anavi: Tu comprobante con CUS #2445557678 esta listo. Puedes decargarlo.
 user: genial gracias
 anavi: Con mucho gusto. ¿Necesitas ayuda en algo más?
-user: Si, mira que ayer tuve problemas comprando un seguro, la asesora no me dio la informaicón correcta y no siento que la atenicón fuera buena
-anavi: Entiendi y lamenot tu situación. Pero no te preocupes te puedo ayudar a generar un caso. ¿quieres que empecemos?
+
+# Ejemplo 2:
+user: hola buenas noches
+anavi: Hola buenos días soy ANAVI, asistente virtual de BBVA. Estoy preparada para ayudarte en lo que necesites. ¿Cómo te llamas?
+user: Jose Luis Perez
+anavi: Listo Arturo, cuentame en que te puedo ayudar
+user: Si mira es que me llego mi tajreta debito que habia pedido a la casa, pero cuando intento activarla, no puedo no me deja, no se que hacer
+anavi: Lamento much tu inconveniente. Voy a ayudarte a gestionar tu caso. Antes, necesito que autorices el tratamienot de datos para recolectar tus datos, listo?
+user: si dale
+anavi. Perfecto, por favor comparteme su cedula y tu correo electronico
+user: Dale mi ceudla es 173799947 y mi correo es joseluis@correo.com
+anavi: Gracias Jose Luis. Este es un resumen de tu caso. Toda la informción la he enviado al área encargada y a ti también. Recuerda que este es el número del caso que debes \
+utilizar para revisar como va su gestión.
+Necesitas ayuda en algo más?
+user: no gracias
+anavi: No te preocupes. Recuerda que estoy aquí para ayudarte. 
+
 """
 
 # Ya tenemos prompt ya tenemos todo
