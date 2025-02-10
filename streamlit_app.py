@@ -38,7 +38,7 @@ Debes ser amable y respetuosa en todo momento.
 Debes ser muy clara al momenot de hablar como si trataras con un niño de 10 años.
 No olvides despedirte amablemente del usuario cuando este se despida primero.
 
-<<CONVERSACION>>
+<<REGLAS DE CONVERSACION>>
 Debes seguir los siguientes pasos durante la conversación:
 
 1. Cuando saludes al usuario debes introducirte por tu nombre y tu función y decirle que estas \
@@ -67,10 +67,11 @@ generar un número de caso, obtener la fecha del caso, enviar el correo al usuar
 - INFORMACIÓN Y/O CONSULTA SOBRE TRANSACCIONES Y PAGOS: Cuando el usuario te pregunte que necesita averiguar sobre una transacción que no ve reflejada, \
 que nunca se realizó, que falló o simplemente recordar la fecha, el valor o sobre que trataba una transacción. Tu objetivo sera generar la imagen del comprobante para el usuario.
 Deberas utilizar las herramientas necesarias para obtener la información de las transacciones dle usuario, encontrar lo que esta buscando y generar la imagen del comprobante.
-Una vez que hayas generado la imagen, deberas decirle al usuario esta frase clave: "Tu comprobante #(numero CUS de la transaccion) esta listo".
+Una vez que hayas generado la imagen, deberas decirle al usuario esta frase clave: "Tu comprobante con CUS #(numero CUS de la transaccion) esta listo".
 Cuando termines, deberas usar las herramientas para guardar el caso en la base de datos.
 
 6. Siempre que termine la conversación, deberas asegurarte de haber guardado los casos en la base de datos. 
+- Cuando necesites el numero de caso, debes generarlo.
 7. Recuerda despedirte de forma amable.
 
 <<NOMBRES DE LAS AREAS>>
@@ -83,6 +84,25 @@ Dependiendo del caso que te solicite el usuario cuando vayas a enviar el correo 
 <<ALMACENAMIENTO DE LA INFORMACION>>
 Siempre que termine la conversación para cualquiera de los casos anteriores, debes almacenar la información \
 en la base de datos para tener registro de la conversación. Es muy importante que siempre lo hagas.
+
+<<EJEMPLO DE CONVERSACION>>
+# Ejemplo 1:
+user: buenos dias
+anavi: Hola buenos días soy ANAVI, asistente virtual de BBVA. Estoy preparada para ayudarte en lo que necesites. ¿Cómo te llamas?
+user: Arturo Saenz
+anavi: Listo Arturo, cuentame en que te pueod ayudar
+user: Si imaginate que estoy buscando informacion sobre una transaccion que hice en una tienda ara  pero no recuerdo bien 
+anavi: Claro que si, autorizas el tratamiento de datos en el siguiente enlace?
+user: Si claro
+anavi: Listo, para continuar y poder ver tus transacciones necesito tu cedula
+user: si claro es 1736573838
+anavi: Listo Arturo, he encontrado tu transaccion realizada el dia indicado, con etse valor y fue exitoso, ¿deseas que genera un comprobante?
+user: si por favor
+anavi: Tu comprobante con CUS #2445557678 esta listo. Puedes decargarlo.
+user: genial gracias
+anavi: Con mucho gusto. ¿Necesitas ayuda en algo más?
+user: Si, mira que ayer tuve problemas comprando un seguro, la asesora no me dio la informaicón correcta y no siento que la atenicón fuera buena
+anavi: Entiendi y lamenot tu situación. Pero no te preocupes te puedo ayudar a generar un caso. ¿quieres que empecemos?
 """
 
 # Ya tenemos prompt ya tenemos todo
@@ -135,41 +155,41 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-with st.container():
-    # Ahora, cuando yo usuario escriba algo
-    # Eso que escribo lo muestro como chat_message con el nombre que le asigne
-    # Si no hay nada escrito no pasa nada
-    if prompt := st.chat_input("Escribe aquí..."):
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        # Y agregamos la respuesta del bicho
-        # Aquí es donde ocurre la magia
-        # Lista de herramientas
-        tools = [send_user_email, send_area_email, generate_case_number, get_transaction, generate_image, store_case, get_case_date]
-        agent_executor = create_react_agent(model_gen, tools, checkpointer=st.session_state["memory"])
-        config = {"configurable": {"thread_id": st.session_state["thread_id"]}}
-        messages = [
-            SystemMessage(content=template),
-            HumanMessage(content=prompt)
-        ]
-        response = agent_executor.invoke({"messages": messages}, config)
-        response = response["messages"][-1].content
-        with st.chat_message("assistant"):
-            st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
 
-        # Boton de descarga de las imagenes
-        if "tu comprobante" in response.lower():
-            cus = re.findall(r"\d{10}", response)[0]
-            print(cus)
-            with open(os.path.join(FOLDER, f"{cus}.png"), "rb") as file:
-                btn = st.download_button(
-                    label="Descargar imagen",
-                    data=file,
-                    file_name=f"comprobante-{cus}.png",
-                    mime="image/png",
-                )
+# Ahora, cuando yo usuario escriba algo
+# Eso que escribo lo muestro como chat_message con el nombre que le asigne
+# Si no hay nada escrito no pasa nada
+if prompt := st.chat_input("Escribe aquí..."):
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Y agregamos la respuesta del bicho
+    # Aquí es donde ocurre la magia
+    # Lista de herramientas
+    tools = [send_user_email, send_area_email, generate_case_number, get_transaction, generate_image, store_case, get_case_date]
+    agent_executor = create_react_agent(model_gen, tools, checkpointer=st.session_state["memory"])
+    config = {"configurable": {"thread_id": st.session_state["thread_id"]}}
+    messages = [
+        SystemMessage(content=template),
+        HumanMessage(content=prompt)
+    ]
+    response = agent_executor.invoke({"messages": messages}, config)
+    response = response["messages"][-1].content
+    with st.chat_message("assistant"):
+        st.markdown(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
+
+    # Boton de descarga de las imagenes
+    if "tu comprobante" in response.lower():
+        cus = re.findall(r"\d{10}", response)[0]
+        print(cus)
+        with open(os.path.join(FOLDER, f"{cus}.png"), "rb") as file:
+            btn = st.download_button(
+                label="Descargar imagen",
+                data=file,
+                file_name=f"comprobante-{cus}.png",
+                mime="image/png",
+            )
 
 # Acá voy a dejar un espacio para que muestre los casos almacenados en la base de datos
 with st.container():

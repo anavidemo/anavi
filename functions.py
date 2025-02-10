@@ -88,7 +88,7 @@ Fecha: {date}
 Número de caso: {case_number}
 Descripción: {case_info}
 
-Le he asignado tu caso al área encargada y será atendido a la brevedad posible. Tendrás tu respuesta \
+Le he asignado tu caso al área encargada y será atendido a la máxima brevedad posible. Tendrás tu respuesta \
 en un máximo de 5 días hábiles. Recuerda que todos nuestros canales estan disponibles para ti.
 """
 
